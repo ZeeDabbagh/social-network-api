@@ -1,19 +1,27 @@
 const { Schema, model } = require('mongoose');
-// const assignmentSchema = require('./Assignment'); need this for thoughts and reactions
+const userSchema = require('./User'); //need this for thoughts and reactions
+const reactionSchema = require('./Reaction')
 
-// Schema to create Student model
+
 const thoughtSchema = new Schema(
   {
     thoughtText: {
       type: String,
       required: true,
-      max_length: 280, //trimmed or trim
+      max_length: 280,
       min_length: 1,
     },
     createdAt: {
-      type: String,
+      type: Date,
       default: Date.now,
-      required: true, // change format of timestamp when getting in insomnia to something that is readable
+      get: function(timestamp) {
+        const date = new Date(timestamp);
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
+        const year = date.getFullYear().toString().slice(-2);
+
+        return `${month}/${day}/${year}`;
+      },
 
     },
     username: {
@@ -25,9 +33,15 @@ const thoughtSchema = new Schema(
   {
     toJSON: {
       getters: true,
+      virtuals: true,
     },
+    id: false,
   }
 );
+
+thoughtSchema.virtual('reactionCount').get( function() {
+  return this.reaction.length
+})
 
 const Thought = model('thought', thoughtSchema);
 

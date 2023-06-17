@@ -5,22 +5,33 @@ const { Schema, model } = require('mongoose');
 const reactionSchema = new Schema(
   {
     reactionId: { // look for activity/syntac got defualt value set to a new object ID (look in mongoose docs too)
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+      default: () => new Types.ObjectId(),
+
+    },
+    reactionBody: {
       type: String,
       required: true,
-      max_length: 280, //trimmed or trim
-      min_length: 1,
-    },
-    createdAt: {
-      type: String,
-      default: Date.now,
-      required: true, // change format of timestamp when getting in insomnia to something that is readable
-
+      max_length: 280,
     },
     username: {
         type: String,
         required: true,
     },
-    reactions: [reactionSchema],
+    createdAt: {
+      type: Date,
+      default: Date.now,
+      get: function(timestamp) {
+        const date = new Date(timestamp);
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
+        const year = date.getFullYear().toString().slice(-2);
+
+        return `${month}/${day}/${year}`;
+      },
+
+    },
   },
   {
     toJSON: {
