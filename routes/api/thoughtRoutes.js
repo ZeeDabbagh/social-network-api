@@ -1,56 +1,26 @@
-const router = require('express').Router();
-// const {
-//   getVideos,
-//   getSingleVideo,
-//   createVideo,
-//   updateVideo,
-//   deleteVideo,
-//   addVideoResponse,
-//   removeVideoResponse,
-// } = require('../../controllers/videoController');
+const router = require('express').Router()
 
-// /api/videos
+const {
+  getThoughts,
+  getSingleThought,
+  createThought,
+  updateThought,
+  deleteThought,
+  createReaction,
+  deleteReaction
+} = require('../../controllers/thoughtController')
+
+router.route('/').get(getThoughts).post(createThought)
+
 router
-    .route('/')
-    .get((req, res) => {
+  .route('/:thoughtId')
+  .get(getSingleThought)
+  .put(updateThought)
+  .delete(deleteThought)
 
-
-    })
-    .post((req, res) => {
-
-
-    });
-
-// /api/videos/:videoId
 router
-  .route('/:videoId')
-  .get((req, res) => {
+  .route('/:thoughtId/reactions')
+  .post(createReaction)
+  .delete(deleteReaction)
 
-
-    })
-  .put((req, res) => {
-
-
-    })
-  .delete((req, res) => {
-
-
-    });
-
-// /api/videos/:videoId/responses
-router
-    .route('/:videoId/responses')
-    .post((req, res) => {
-
-
-    });
-
-// /api/videos/:videoId/responses/:responseId
-router
-    .route('/:videoId/responses/:responseId')
-    .delete((req, res) => {
-
-
-    });
-
-module.exports = router;
+module.exports = router

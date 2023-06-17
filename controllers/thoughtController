@@ -24,7 +24,7 @@ module.exports = {
             const thought = await Thought.findOne({_id: req.params.thoughtId}).select('-__v')
 
             if (!thought) {
-                res.status(404).json({message: 'No thought was find with this ID'})
+                return res.status(404).json({message: 'No thought was find with this ID'})
             }
             return res.json(thought)
 
@@ -36,5 +36,98 @@ module.exports = {
     },
 
 
+    async createThought (req, res) {
+
+    }, //need weng's help
+
+//update thought by ID    
+    async updateThought (req, res) {
+        try {
+            const thought = await Thought.findOneAndUpdate(
+                {_id : req.params.thoughtId},
+                {$set: req.body },
+                {runValidators: true, new:true}
+            )
+
+            if (!thought) {
+                return res.status(404).json({message: 'No thought found with this ID'})
+            }
+            return res.json(thought)
+        } catch(err) {
+
+            console.log(err)
+            res.status(500).json(err)
+        }
+    },
+
+//delete thought by ID    
+    async deleteThought (req, res) {
+        try {
+            const thought = await Thought.findByIdAndDelete({_id: req.paras.thoughtId})
+
+            if (!thought) {
+               return res.status(404).json({message: 'No thought found with this ID'})
+            }
+            res.json({message: 'Thought was deleted successfully'})
+        } catch(err) {
+
+            console.log(err)
+            res.status(500).json(err)
+        }
+    },
+
+//create reaction and push to reaction array of a specific thought
+    async createReaction (req, res) {
+        try {
+            const { thoughtId } = req.params //extracts the thoughtId from req.params.
+            const { reaction } = req.body //extracts the reaction from req.body.
+
+            const thought = await Thought.findById(thoughtId)
+
+            if (!thought) {
+                return res.status(404).json({message: 'No thought was find with this ID'})
+            }
+
+            thought.reactions.push(reaction)
+            const updatedThought = await thought.save() // saves the updated thought using thought.save().
+
+            res.json(updatedThought)
+
+        } catch(err) {
+
+            console.log(err)
+            res.status(500).json(err)
+        }
+    },
+
+//remove reaction by reaction ID value    
+    async deleteReaction (req, res) {
+        try {
+            const { thoughtId, reactionId } = req.params;
+
+            const thought = await Thought.findById(thoughtId)
+
+            if (!thought) {
+                return res.status(404).json({message: 'No thought was found with this ID'})
+            }
+
+            const reactionIndex = thought.reactions.findIndex( //find the index of the reaction in the reactions array based on the reactionId value.
+                (reaction) => reaction._id.toString() === reactionId
+            )
+
+            if (reactionIndex === -1 ) {
+                return res.status(404).json({message: 'No reaction was found with this ID'})
+            }
+
+            thought.reactions.splice(reactionIndex, 1) //uses splice to remove the reaction from the reactions array.
+            const updateThought = await thought.save();
+
+            res.json(updateThought)
+        } catch(err) {
+            
+            console.log(err)
+            res.status(500).json(err)
+        }
+    }
 }
 
