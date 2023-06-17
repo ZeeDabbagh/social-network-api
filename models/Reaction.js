@@ -1,10 +1,9 @@
-const { Schema, model } = require('mongoose');
-// const assignmentSchema = require('./Assignment'); need this for thoughts and reactions
+const { Schema, model, Types } = require('mongoose');
 
-// Schema to create Student model
+
 const reactionSchema = new Schema(
   {
-    reactionId: { // look for activity/syntac got defualt value set to a new object ID (look in mongoose docs too)
+    reactionId: { 
       type: Schema.Types.ObjectId,
       ref: 'user',
       default: () => new Types.ObjectId(),
