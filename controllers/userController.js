@@ -69,17 +69,13 @@ module.exports = {
                 return res.status(404).json({ message: 'No user found with this ID' })
             }
 
-            const thought = await Thought.findOneAndUpdate(
-                {users: req.params.userId},
-                {$pull: { thought: req.params.thoughtId}},
-                {new: true}
-            )
+            const thought = await Thought.deleteMany({ _id: { $in: user.thoughts }})
 
             if (!thought) {
                 return res.status(404).json({message: 'User deleted but no thoughts found'})
             }
 
-            res.json({message: 'User successfully deleted'})
+            res.json({message: 'User and associated thoughts successfully deleted'})
         }catch(err){
             console.log(err)
             res.status(500).json(err)
@@ -107,24 +103,25 @@ module.exports = {
         }
     },
 
-//remove friend from user's friend list
+//Remove friend from user friend list
     async removeFriend (req, res) {
-        try{
-            const user = await User.findOneAndUpdate(
-                {_id : req.params.userId},
-                {$pullAll: [{friend: req.params.friendId}]},
-                {runValidators:true, new: true}
-            )
-
-            if (!user) {
-                res.status(404).json({message: 'No user found with this ID'})
-            }
-            res.json(user)
-
-        } catch(err){
-            console.log(err)
-            res.status(500).json(err)
+        console.log('You are removing a friend');
+        console.log(req.params);
+        try {
+          const user = await User.findOneAndUpdate(
+            { _id: req.params.userId },
+            { $pull: { friends: req.params.friendId } },
+            { runValidators: true, new: true }
+          );
+      
+          if (!user) {
+            res.status(404).json({ message: 'No user found with this ID' });
+          }
+          res.json({ message: 'Friend removed', user });
+        } catch (err) {
+          console.log(err);
+          res.status(500).json(err);
         }
-    }
+      }
 }
 
