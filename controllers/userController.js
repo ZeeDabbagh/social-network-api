@@ -5,7 +5,7 @@ module.exports = {
 //get all users    
     async getUsers(req, res) {
         try {
-            const users = await User.find()
+            const users = await User.find().populate('thoughts').populate('friends')
             res.json(users);
         } catch(err) {
             console.log(err)
@@ -89,12 +89,12 @@ module.exports = {
 //add friend to user friend list
     async addFriend (req, res) {
         console.log('You are adding a friend')
-        console.log(req.body)
+        console.log(req.params)
 
         try{
             const user = await User.findOneAndUpdate(
                 {_id : req.params.userId},
-                {$addToSet: {friend: req.body}},
+                {$addToSet: {friends: req.params.friendId}},
                 {runValidators:true, new: true}
             )
             if (!user){

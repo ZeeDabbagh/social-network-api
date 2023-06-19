@@ -5,7 +5,6 @@ const reactionSchema = new Schema(
   {
     reactionId: { 
       type: Schema.Types.ObjectId,
-      ref: 'user',
       default: () => new Types.ObjectId(),
 
     },
@@ -40,6 +39,6 @@ const reactionSchema = new Schema(
   }
 );
 
-const Reaction = model('reaction', reactionSchema);
+//const Reaction = model('reaction', reactionSchema);
 
-module.exports = Reaction;
+module.exports = reactionSchema;

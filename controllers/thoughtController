@@ -38,6 +38,24 @@ module.exports = {
 
     async createThought (req, res) {
 
+        try{
+            const thought = await Thought.create(req.body)
+            const user = await User.findOne({_id: req.body.userId})
+
+            if (!user) {
+                return res.status(404).json({message: 'No user found with this ID'})
+            }
+
+            user.thoughts.push(thought._id)
+
+            await user.save()
+
+            res.json(thought)
+        } catch(err) {
+            console.log(err)
+            res.status(500).json(err)
+        }
+
     }, //need weng's help
 
 //update thought by ID    
@@ -80,7 +98,7 @@ module.exports = {
     async createReaction (req, res) {
         try {
             const { thoughtId } = req.params //extracts the thoughtId from req.params.
-            const { reaction } = req.body //extracts the reaction from req.body.
+            const reaction = req.body //extracts the reaction from req.body.
 
             const thought = await Thought.findById(thoughtId)
 
@@ -112,7 +130,7 @@ module.exports = {
             }
 
             const reactionIndex = thought.reactions.findIndex( //find the index of the reaction in the reactions array based on the reactionId value.
-                (reaction) => reaction._id.toString() === reactionId
+                (reaction) => reaction.reactionId.toString() === reactionId
             )
 
             if (reactionIndex === -1 ) {
